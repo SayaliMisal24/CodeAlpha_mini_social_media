@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeNest | Mini Social Media</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="logo" href="#">VibeNest</a>
+
+    <nav>
+      <a href="#feed">Home</a>
+      <a href="#profile">Profile</a>
+      <button id="logout-button" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main class="page-layout">
+    <aside class="profile-card" id="profile">
+      <div class="avatar">SM</div>
+      <h2>Sayali Misal</h2>
+      <p>@sayali</p>
+
+      <div class="profile-stats">
+        <div><strong>12</strong><span>Posts</span></div>
+        <div><strong>48</strong><span>Followers</span></div>
+        <div><strong>30</strong><span>Following</span></div>
+      </div>
+
+      <button type="button">Edit profile</button>
+    </aside>
+
+    <section class="feed" id="feed">
+      <div class="create-post-card">
+        <h1>Welcome back!</h1>
+        <p>Share something with your community.</p>
+
+        <form id="post-form">
+          <label for="post-content">Create a post</label>
+          <textarea
+            id="post-content"
+            placeholder="What is on your mind?"
+            maxlength="280"
+            required
+          ></textarea>
+
+          <div class="post-form-footer">
+            <span id="character-count">0 / 280</span>
+            <button type="submit">Post</button>
+          </div>
+        </form>
+      </div>
+
+      <section id="posts-container" aria-label="Posts">
+        <article class="post-card">
+          <div class="post-header">
+            <div class="small-avatar">SM</div>
+            <div>
+              <h3>Sayali Misal</h3>
+              <p>@sayali · Just now</p>
+            </div>
+          </div>
+
+          <p class="post-content">
+            Welcome to my new mini social media platform! 🎉
+          </p>
+
+          <div class="post-actions">
+            <button type="button">♡ Like</button>
+            <button type="button">💬 Comment</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
