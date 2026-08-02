@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile - Bondly</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="navbar-container"></div>
+
+  <div class="container">
+
+    <div class="card profile-header">
+      <img id="profileImage" src="https://via.placeholder.com/100" alt="Profile" />
+      <h2 id="profileName">Loading...</h2>
+      <p id="profileUsername" style="color: var(--text-gray);"></p>
+      <p id="profileBio" style="margin-top: 8px;"></p>
+
+      <div class="profile-stats">
+  <div>
+    <div class="stat-number" id="postsCount">0</div>
+    <div class="stat-label">Posts</div>
+  </div>
+  <div style="cursor: pointer;" id="followersStat">
+    <div class="stat-number" id="followersCount">0</div>
+    <div class="stat-label">Followers</div>
+  </div>
+  <div style="cursor: pointer;" id="followingStat">
+    <div class="stat-number" id="followingCount">0</div>
+    <div class="stat-label">Following</div>
+  </div>
+</div>
+
+      <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
+    </div>
+
+    <!-- Edit Profile Form (hidden until "Edit Profile" is clicked) -->
+    <div class="card" id="editProfileCard" style="display: none;">
+      <h3 style="margin-bottom: 16px;">Edit Profile</h3>
+      <form id="editProfileForm">
+        <div class="form-group">
+          <label for="editName">Name</label>
+          <input type="text" id="editName" required />
+        </div>
+        <div class="form-group">
+          <label for="editBio">Bio</label>
+          <textarea id="editBio" rows="3" placeholder="Tell us about yourself"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+      </form>
+    </div>
+
+    <h3 style="margin: 20px 0 12px;">My Posts</h3>
+    <div class="spinner" id="loadingSpinner"></div>
+    <div id="myPostsContainer"></div>
+
+  </div>
+  <div class="modal-overlay" id="listModal">
+      <div class="modal-box">
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+        <h3 id="modalTitle">Followers</h3>
+        <div id="modalList"></div>
+      </div>
+    </div>
+  <script src="js/utils.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

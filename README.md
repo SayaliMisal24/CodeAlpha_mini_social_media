@@ -1,6 +1,6 @@
 # CodeAlpha_mini_social_media
 A full-stack mini social media platform with user profiles, posts, comments, and follow/unfollow features.
-# Mini Social Media
+# Bondly
 
 A full-stack social media platform where users can create profiles, publish posts, add comments, and follow or unfollow other users.
 

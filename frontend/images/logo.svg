@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bondlyGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="40%" stop-color="#2563eb"/>
+      <stop offset="75%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#c026d3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square with gradient -->
+  <rect width="200" height="200" rx="44" fill="url(#bondlyGradient)"/>
+
+  <!-- Chat bubble shape -->
+  <path d="M50 65 C50 54 59 45 70 45 L130 45 C141 45 150 54 150 65 L150 110 C150 121 141 130 130 130 L92 130 L68 152 L70 130 L70 130 C59 130 50 121 50 110 Z"
+        fill="#ffffff"/>
+
+  <!-- Two linked circles forming a "bond" mark inside the bubble -->
+  <circle cx="85" cy="87" r="14" fill="none" stroke="url(#bondlyGradient)" stroke-width="7"/>
+  <circle cx="113" cy="87" r="14" fill="none" stroke="url(#bondlyGradient)" stroke-width="7"/>
+</svg>

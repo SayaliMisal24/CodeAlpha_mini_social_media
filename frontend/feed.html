@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed - Bondly</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Navbar gets injected here by navbar.js -->
+  <div id="navbar-container"></div>
+
+  <div class="container">
+
+    <!-- Create Post Card -->
+    <div class="card">
+      <form id="createPostForm">
+        <div class="form-group">
+          <textarea id="captionInput" rows="3" placeholder="What's on your mind?"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="imageInput" style="font-weight: 400; color: var(--text-gray); cursor: pointer;">
+            📷 Add a photo (optional)
+          </label>
+          <input type="file" id="imageInput" accept="image/*" />
+        </div>
+        <button type="submit" class="btn btn-primary" id="postBtn">Post</button>
+      </form>
+    </div>
+
+    <!-- Loading Spinner (shown while fetching posts) -->
+    <div class="spinner" id="loadingSpinner"></div>
+
+    <!-- Posts get injected here -->
+    <div id="postsContainer"></div>
+
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/feed.js"></script>
+</body>
+</html>
