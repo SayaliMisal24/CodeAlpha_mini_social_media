@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 /* ============================================
    MINI SOCIAL MEDIA - SHARED STYLESHEET
    Modern Blue Theme - used across all pages
@@ -8,7 +9,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
 }
 
 :root {
@@ -27,6 +28,7 @@
   --shadow-hover: 0 6px 20px rgba(168, 85, 247, 0.16);
   --radius: 12px;
 }
+
 body {
   background-color: var(--background);
   color: var(--text-dark);
@@ -149,7 +151,7 @@ a {
    LAYOUT CONTAINERS
    ============================================ */
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 24px 16px;
 }
@@ -300,11 +302,13 @@ a {
   margin-bottom: 12px;
 }
 
-.post-header img {
-  width: 44px;
-  height: 44px;
+.post-header > a > img {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--light-blue);
+  flex-shrink: 0;
 }
 
 .post-header .post-user-info {
@@ -313,8 +317,10 @@ a {
 }
 
 .post-header .post-username {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-dark);
+  font-size: 15.5px;
+  letter-spacing: -0.2px;
 }
 
 .post-header .post-date {
@@ -323,16 +329,22 @@ a {
 }
 
 .post-caption {
-  margin-bottom: 12px;
-  font-size: 15px;
+  margin-bottom: 14px;
+  font-size: 16.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-.post-image {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  max-height: 500px;
-  object-fit: cover;
+ img.post-image {
+  display: block !important;
+  width: 100% !important;
+  height: 420px !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
+  margin-top: 12px !important;
+  object-fit: cover !important;
+  background-color: var(--light-blue);
 }
 
 .post-actions {
@@ -350,11 +362,28 @@ a {
 
 .comment-item {
   font-size: 14px;
-  margin-bottom: 8px;
+  padding: 8px 12px;
+  background-color: var(--light-blue);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.comment-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .comment-item strong {
   margin-right: 6px;
+  color: var(--primary-blue-dark);
+  display: inline;
 }
 
 .comment-input-row {
@@ -586,4 +615,411 @@ a {
 .modal-user-item a {
   color: var(--text-dark);
   font-weight: 500;
+}
+/* ============================================
+   DARK MODE
+   ============================================ */
+[data-theme="dark"] {
+  --light-blue: #2a2438;
+  --background: #16121f;
+  --white: #1e1a2b;
+  --text-dark: #f1eef7;
+  --text-gray: #a79fc0;
+  --border-color: #362f47;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] body {
+  background-color: var(--background);
+}
+
+[data-theme="dark"] .comment-item {
+  background-color: #2a2438;
+}
+
+/* Smooth theme switch instead of a jarring flash */
+body, .card, .navbar, .comment-item, input, textarea {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Dark mode toggle switch */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--light-blue);
+}
+
+/* ============================================
+   SMOOTH ANIMATIONS & MICRO-INTERACTIONS
+   ============================================ */
+.card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.post-card {
+  border: 1px solid transparent;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(168, 85, 247, 0.15);
+}
+
+.btn {
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.3);
+}
+
+.btn-icon {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Fade-and-slide in for post cards as they load */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.post-card {
+  animation: cardEnter 0.35s ease both;
+}
+
+/* Stagger the animation slightly for each card */
+.post-card:nth-child(1) { animation-delay: 0.03s; }
+.post-card:nth-child(2) { animation-delay: 0.08s; }
+.post-card:nth-child(3) { animation-delay: 0.13s; }
+.post-card:nth-child(4) { animation-delay: 0.18s; }
+.post-card:nth-child(5) { animation-delay: 0.23s; }
+
+/* Smooth navbar */
+.navbar {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="dark"] .navbar {
+  background-color: rgba(30, 26, 43, 0.85);
+}
+
+/* ============================================
+   SKELETON LOADING (instead of plain spinner)
+   ============================================ */
+.skeleton-card {
+  background-color: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.skeleton-line, .skeleton-circle, .skeleton-block {
+  background: linear-gradient(90deg, var(--light-blue) 25%, var(--border-color) 50%, var(--light-blue) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.skeleton-line {
+  height: 12px;
+  margin-top: 8px;
+}
+
+.skeleton-block {
+  height: 180px;
+  margin-top: 14px;
+  border-radius: 10px;
+}
+
+/* ============================================
+   IMAGE LIGHTBOX
+   ============================================ */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fadeIn 0.2s ease;
+}
+
+.lightbox-overlay.active {
+  display: flex;
+}
+
+.lightbox-overlay img {
+  max-width: 90%;
+  max-height: 85%;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.post-image {
+  cursor: zoom-in;
+}
+
+/* ============================================
+   PEOPLE TO FOLLOW WIDGET
+   ============================================ */
+.suggestions-card h3 {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.suggestion-item img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.suggestion-item .suggestion-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-item .suggestion-name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-item .follow-mini-btn {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.suggestion-item .follow-mini-btn:hover {
+  background: var(--primary-blue-dark);
+}
+/* ============================================
+   FORCE CORRECT POST CARD LAYOUT
+   (prevents any flex/float leaking between sections)
+   ============================================ */
+.post-card {
+  display: block !important;
+}
+
+.post-header {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.post-caption,
+img.post-image,
+.post-actions,
+.comments-section {
+  display: block;
+  width: 100%;
+  clear: both;
+}
+
+.post-header > a:first-child img {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+/* Double-click heart burst */
+.heart-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 80px;
+  pointer-events: none;
+  animation: heartPop 0.7s ease forwards;
+  z-index: 10;
+}
+
+@keyframes heartPop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+.post-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  background: var(--white);
+  box-shadow: var(--shadow-hover);
+  border-radius: 8px;
+  min-width: 150px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.post-menu-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 13.5px;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.post-menu-dropdown button:hover {
+  background-color: var(--light-blue);
+}
+/* Whole page fades in smoothly on load */
+body {
+  animation: pageFadeIn 0.4s ease;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+/* ============================================
+   PROFILE PHOTO UPLOAD
+   ============================================ */
+.profile-photo-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-photo-edit-btn {
+  position: absolute;
+  bottom: 16px;
+  right: -4px;
+  background: var(--primary-blue);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  border: 3px solid var(--white);
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.profile-photo-edit-btn:hover {
+  background: var(--primary-blue-dark);
+  transform: scale(1.08);
+}
+
+.profile-photo-wrapper img {
+  transition: opacity 0.2s ease;
+}
+
+.profile-photo-wrapper.uploading img {
+  opacity: 0.5;
+}
+/* ============================================
+   NOTIFICATIONS
+   ============================================ */
+.notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.notif-dropdown {
+  min-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  right: 0;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  color: var(--text-dark);
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.notif-item:hover {
+  background-color: var(--light-blue);
+}
+
+.notif-item.unread {
+  background-color: rgba(168, 85, 247, 0.06);
+}
+
+.notif-item img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: var(--text-gray);
+  margin-top: 2px;
 }

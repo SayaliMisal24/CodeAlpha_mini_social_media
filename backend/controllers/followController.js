@@ -1,13 +1,12 @@
 const User = require('../models/User');
-
+const Notification = require('../models/Notification');
 // @desc   Follow another user
 // @route  POST /api/follow/:id
 const followUser = async (req, res) => {
   try {
-    const targetUserId = req.params.id; // the user we want to follow
-    const currentUserId = req.userId; // the logged-in user (from authMiddleware)
+    const targetUserId = req.params.id;
+    const currentUserId = req.userId;
 
-    // Can't follow yourself
     if (targetUserId === currentUserId) {
       return res.status(400).json({ message: 'You cannot follow yourself' });
     }
@@ -19,17 +18,22 @@ const followUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if already following
     if (targetUser.followers.includes(currentUserId)) {
       return res.status(400).json({ message: 'You already follow this user' });
     }
 
-    // Add each other to followers/following lists
     targetUser.followers.push(currentUserId);
     currentUser.following.push(targetUserId);
 
     await targetUser.save();
     await currentUser.save();
+
+    // Create a notification
+    await Notification.create({
+      recipient: targetUserId,
+      sender: currentUserId,
+      type: 'follow',
+    });
 
     res.status(200).json({ message: `You are now following ${targetUser.username}` });
   } catch (error) {

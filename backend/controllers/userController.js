@@ -47,5 +47,21 @@ const getUserById = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+// @desc   Get a few suggested users to follow (not already followed)
+// @route  GET /api/users/suggestions
+const getSuggestedUsers = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.userId);
 
-module.exports = { searchUsers, getUserById };
+    const suggestions = await User.find({
+      _id: { $ne: req.userId, $nin: currentUser.following },
+    })
+      .select('name username profileImage')
+      .limit(5);
+
+    res.status(200).json(suggestions);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+module.exports = { searchUsers, getUserById, getSuggestedUsers };

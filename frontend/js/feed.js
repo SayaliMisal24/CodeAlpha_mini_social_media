@@ -7,9 +7,14 @@ renderNavbar();
 
 const postsContainer = document.getElementById('postsContainer');
 const loadingSpinner = document.getElementById('loadingSpinner');
-const createPostForm = document.getElementById('createPostForm');
-const postBtn = document.getElementById('postBtn');
 const currentUser = getUser();
+
+// ----- Escape user text so it can never break our HTML -----
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
 
 // ----- Format date nicely (e.g. "2 hours ago") -----
 function timeAgo(dateString) {
@@ -24,82 +29,172 @@ function timeAgo(dateString) {
 }
 
 // ----- Build the HTML for a single post -----
+// ----- Build the HTML for a single post -----
 function renderPostCard(post) {
   const isLiked = post.likes.includes(currentUser.id);
-  const profileImg = post.userId.profileImage
-    ? `images/${post.userId.profileImage}`
-    : 'https://via.placeholder.com/44';
+  const isOwnPost = post.userId._id === currentUser.id;
+  const fallbackAvatar = 'https://ui-avatars.com/api/?background=a855f7&color=fff&name=' + encodeURIComponent(post.userId.username);
+  const profileImg = post.userId.profileImage ? `images/${post.userId.profileImage}` : fallbackAvatar;
+  const profileLink = isOwnPost ? 'profile.html' : `view-profile.html?id=${post.userId._id}`;
 
-  const commentsHTML = post.comments
-    .map(
-      (c) => `
-      <div class="comment-item">
-        <strong>${c.userId.username}</strong>${c.comment}
-      </div>
-    `
-    )
-    .join('');
+  const commentsHTML = post.comments.length
+  ? post.comments
+      .map((c) => {
+        const commentAvatar = `https://ui-avatars.com/api/?background=a855f7&color=fff&size=28&name=${encodeURIComponent(c.userId.username)}`;
+        return `
+        <div class="comment-item">
+          <img src="${commentAvatar}" class="comment-avatar" alt="${escapeHTML(c.userId.username)}" />
+          <div><strong>${escapeHTML(c.userId.username)}</strong>${escapeHTML(c.comment)}</div>
+        </div>
+      `;
+      })
+      .join('')
+  : `<p style="color: var(--text-gray); font-size: 13px; padding: 4px 0;">No comments yet — be the first!</p>`;
 
   return `
-    <div class="card" data-post-id="${post._id}">
+    <div class="card post-card" data-post-id="${post._id}">
+
       <div class="post-header">
-        <img src="${profileImg}" alt="${post.userId.username}" />
-        <div class="post-user-info">
-  <a href="${post.userId._id === currentUser.id ? 'profile.html' : 'view-profile.html?id=' + post.userId._id}" class="post-username" style="color: var(--text-dark);">${post.userId.username}</a>
-  <span class="post-date">${timeAgo(post.createdAt)}</span>
+  <a href="${profileLink}">
+    <img src="${profileImg}" alt="${escapeHTML(post.userId.username)}" onerror="this.src='${fallbackAvatar}'" />
+  </a>
+  <div class="post-user-info">
+    <a href="${profileLink}" class="post-username">${isOwnPost ? 'You' : escapeHTML(post.userId.username)}</a>
+    <span class="post-date">${timeAgo(post.createdAt)}</span>
+  </div>
+  ${isOwnPost ? `
+    <div class="post-menu-wrapper" style="margin-left: auto; position: relative;">
+      <button class="btn-icon" data-action="toggle-menu" data-id="${post._id}" style="font-size: 20px; padding: 4px 10px;">⋮</button>
+      <div class="post-menu-dropdown" data-menu-for="${post._id}" style="display: none;">
+        <button data-action="delete-post" data-id="${post._id}">🗑️ Delete Post</button>
+      </div>
+    </div>
+  ` : ''}
 </div>
 
-      ${post.caption ? `<p class="post-caption">${post.caption}</p>` : ''}
-      ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" />` : ''}
+      ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" loading="lazy" />` : ''}
+
+      ${post.caption ? `<p class="post-caption">${escapeHTML(post.caption)}</p>` : ''}
 
       <div class="post-actions">
-        <button class="btn-icon like-btn ${isLiked ? 'liked' : ''}" data-id="${post._id}">
-          ${isLiked ? '❤️' : '🤍'} <span class="like-count">${post.likes.length}</span>
+        <button class="btn-icon like-btn ${isLiked ? 'liked' : ''}" data-action="like" data-id="${post._id}">
+          <span class="like-heart">${isLiked ? '❤️' : '🤍'}</span> <span class="like-count">${post.likes.length}</span>
         </button>
-        <button class="btn-icon comment-toggle-btn" data-id="${post._id}">
+        <button class="btn-icon" data-action="toggle-comments" data-id="${post._id}">
           💬 <span>${post.comments.length}</span>
         </button>
       </div>
 
-      <div class="comments-section" style="display: none;" id="comments-${post._id}">
+      <div class="comments-section" style="display: none;" data-comments-for="${post._id}">
         <div class="comment-list">${commentsHTML}</div>
         <div class="comment-input-row">
-          <input type="text" placeholder="Write a comment..." class="comment-input" data-id="${post._id}" />
+          <input type="text" placeholder="Write a comment..." class="comment-input" data-id="${post._id}" maxlength="300" />
+          <button class="btn-icon" data-action="send-comment" data-id="${post._id}" style="color: var(--primary-blue);">Send</button>
         </div>
       </div>
+
     </div>
   `;
 }
 
 // ----- Fetch all posts from backend -----
+// ----- Show animated skeleton placeholders while loading -----
+function renderSkeletons(count = 3) {
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div class="skeleton-card">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="skeleton-circle"></div>
+          <div style="flex: 1;">
+            <div class="skeleton-line" style="width: 40%;"></div>
+            <div class="skeleton-line" style="width: 25%;"></div>
+          </div>
+        </div>
+        <div class="skeleton-line" style="width: 90%;"></div>
+        <div class="skeleton-line" style="width: 60%;"></div>
+        <div class="skeleton-block"></div>
+      </div>
+    `;
+  }
+  return html;
+}
+
+// ----- Fetch all posts from backend -----
 async function loadPosts() {
-  loadingSpinner.style.display = 'block';
-  postsContainer.innerHTML = '';
+  loadingSpinner.style.display = 'none';
+  postsContainer.innerHTML = renderSkeletons();
 
   try {
     const response = await fetch(`${API_BASE_URL}/posts`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
-    const posts = await response.json();
+  headers: { Authorization: `Bearer ${getToken()}` },
+  cache: 'no-store', // always get fresh data, never a cached 304 response
+});
 
-    loadingSpinner.style.display = 'none';
+    if (!response.ok) throw new Error('Request failed');
+
+    const posts = await response.json();
+    cachedPosts = posts;
 
     if (posts.length === 0) {
       postsContainer.innerHTML = `
-        <div class="empty-state">
-          <h3>No posts yet</h3>
-          <p>Be the first to share something!</p>
-        </div>
-      `;
+  <div class="empty-state">
+    <h3>Couldn't load the feed</h3>
+    <p>Check your connection and try again.</p>
+    <button class="btn btn-primary" style="width: auto; padding: 10px 24px; margin-top: 12px;" onclick="loadPosts()">Retry</button>
+  </div>
+`;
       return;
     }
 
     postsContainer.innerHTML = posts.map(renderPostCard).join('');
-    attachPostEventListeners();
   } catch (error) {
-    loadingSpinner.style.display = 'none';
-    showToast('Failed to load posts', 'error');
+  console.error('LOAD POSTS ERROR:', error); // shows the real reason in the console
+  postsContainer.innerHTML = `
+    <div class="empty-state">
+      <h3>Couldn't load the feed</h3>
+      <p>Check your connection and try again.</p>
+    </div>
+  `;
+  showToast('Failed to load posts — is your backend running?', 'error');
+}
+}
+// ----- Image Lightbox: click any post image to view full-screen -----
+postsContainer.addEventListener('click', (e) => {
+  if (e.target.classList.contains('post-image')) {
+    openLightbox(e.target.src);
   }
+});
+// ----- Double-click image to like (Instagram-style) -----
+postsContainer.addEventListener('dblclick', (e) => {
+  const img = e.target.closest('.post-image');
+  if (!img) return;
+
+  const card = img.closest('.post-card');
+  const postId = card.dataset.postId;
+
+  // Show a big heart burst animation
+  const heartBurst = document.createElement('div');
+  heartBurst.className = 'heart-burst';
+  heartBurst.textContent = '❤️';
+  img.parentElement.style.position = 'relative';
+  img.parentElement.appendChild(heartBurst);
+  setTimeout(() => heartBurst.remove(), 800);
+
+  toggleLike(postId);
+});
+function openLightbox(src) {
+  let overlay = document.getElementById('lightboxOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    overlay.id = 'lightboxOverlay';
+    overlay.innerHTML = '<img id="lightboxImg" src="" alt="Full view" />';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', () => overlay.classList.remove('active'));
+  }
+  document.getElementById('lightboxImg').src = src;
+  overlay.classList.add('active');
 }
 
 // ----- Attach click events to like/comment buttons (run after every render) -----
@@ -156,47 +251,151 @@ async function addComment(postId, comment) {
     showToast('Failed to add comment', 'error');
   }
 }
-
-// ----- Create a new post -----
-createPostForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const caption = document.getElementById('captionInput').value.trim();
-  const imageFile = document.getElementById('imageInput').files[0];
-
-  if (!caption && !imageFile) {
-    showToast('Write something or add a photo first', 'error');
-    return;
-  }
-
-  postBtn.disabled = true;
-  postBtn.textContent = 'Posting...';
+// ----- Delete a post (from feed) -----
+async function deletePostFromFeed(postId) {
+  if (!confirm('Delete this post? This cannot be undone.')) return;
 
   try {
-    // FormData lets us send both text AND a file together
-    const formData = new FormData();
-    formData.append('caption', caption);
-    if (imageFile) formData.append('image', imageFile);
-
-    const response = await fetch(`${API_BASE_URL}/posts`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${getToken()}` }, // NOTE: no Content-Type here - browser sets it automatically for FormData
-      body: formData,
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${getToken()}` },
     });
-
     if (!response.ok) throw new Error();
-
-    document.getElementById('captionInput').value = '';
-    document.getElementById('imageInput').value = '';
-    showToast('Post created!', 'success');
+    showToast('Post deleted', 'success');
     loadPosts();
   } catch (error) {
-    showToast('Failed to create post', 'error');
-  } finally {
-    postBtn.disabled = false;
-    postBtn.textContent = 'Post';
+    showToast('Failed to delete post', 'error');
+  }
+}
+// ----- EVENT DELEGATION for like, comment toggle, and send comment -----
+postsContainer.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+  const postId = btn.dataset.id;
+
+  if (action === 'like') {
+    toggleLike(postId);
+  }
+
+  if (action === 'toggle-comments') {
+    const section = postsContainer.querySelector(`[data-comments-for="${postId}"]`);
+    if (section) {
+      section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+
+  if (action === 'toggle-menu') {
+  e.stopPropagation();
+  const dropdown = postsContainer.querySelector(`[data-menu-for="${postId}"]`);
+  // Close all other open menus first
+  document.querySelectorAll('.post-menu-dropdown').forEach((d) => {
+    if (d !== dropdown) d.style.display = 'none';
+  });
+  dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+if (action === 'delete-post') {
+  deletePostFromFeed(postId);
+  
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.post-menu-wrapper')) {
+    document.querySelectorAll('.post-menu-dropdown').forEach((d) => (d.style.display = 'none'));
+  }
+});
+});
+
+// Handle "Enter" key inside comment inputs (also via delegation)
+postsContainer.addEventListener('keypress', (e) => {
+  if (e.key !== 'Enter') return;
+  if (!e.target.classList.contains('comment-input')) return;
+
+  const postId = e.target.dataset.id;
+  const value = e.target.value.trim();
+  if (value === '') return;
+
+  addComment(postId, value);
+  e.target.value = '';
+});
+
+// ----- Image Lightbox: click any post image to view full-screen -----
+postsContainer.addEventListener('click', (e) => {
+  if (e.target.classList.contains('post-image')) {
+    openLightbox(e.target.src);
   }
 });
 
+function openLightbox(src) {
+  let overlay = document.getElementById('lightboxOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    overlay.id = 'lightboxOverlay';
+    overlay.innerHTML = '<img id="lightboxImg" src="" alt="Full view" />';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', () => overlay.classList.remove('active'));
+  }
+  document.getElementById('lightboxImg').src = src;
+  overlay.classList.add('active');
+}
 // ----- Load posts when the page opens -----
 loadPosts();
+// ----- Load "People to Follow" suggestions -----
+async function loadSuggestions() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/suggestions`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    const users = await response.json();
+
+    if (!response.ok || users.length === 0) return;
+
+    const suggestionsCard = document.getElementById('suggestionsCard');
+    const suggestionsList = document.getElementById('suggestionsList');
+
+    suggestionsList.innerHTML = users
+      .map(
+        (u) => `
+        <div class="suggestion-item">
+          <a href="view-profile.html?id=${u._id}">
+            <img src="${u.profileImage ? 'images/' + u.profileImage : 'https://ui-avatars.com/api/?background=a855f7&color=fff&name=' + encodeURIComponent(u.username)}" />
+          </a>
+          <div class="suggestion-info">
+            <a href="view-profile.html?id=${u._id}" class="suggestion-name" style="color: var(--text-dark);">${escapeHTML(u.username)}</a>
+          </div>
+          <button class="follow-mini-btn" data-follow-id="${u._id}">Follow</button>
+        </div>
+      `
+      )
+      .join('');
+
+    suggestionsCard.style.display = 'block';
+
+    // Follow button clicks
+    suggestionsList.querySelectorAll('.follow-mini-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+          const res = await fetch(`${API_BASE_URL}/follow/${btn.dataset.followId}`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${getToken()}` },
+          });
+          if (!res.ok) throw new Error();
+          btn.textContent = 'Following ✓';
+          btn.style.background = 'var(--success)';
+        } catch (error) {
+          btn.disabled = false;
+          btn.textContent = 'Follow';
+          showToast('Failed to follow', 'error');
+        }
+      });
+    });
+  } catch (error) {
+    // Fail silently — suggestions are a nice-to-have, not critical
+  }
+}
+
+loadSuggestions();

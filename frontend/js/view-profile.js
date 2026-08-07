@@ -129,8 +129,9 @@ async function loadUserPosts() {
   loadingSpinner.style.display = 'block';
   try {
     const response = await fetch(`${API_BASE_URL}/posts`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  headers: { Authorization: `Bearer ${getToken()}` },
+  cache: 'no-store', // always get fresh data, never a cached 304 response
+});
     const allPosts = await response.json();
     const userPosts = allPosts.filter((post) => post.userId._id === profileUserId);
 

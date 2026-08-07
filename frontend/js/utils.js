@@ -1,3 +1,5 @@
+// Apply saved theme immediately, before page renders
+document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
 // ============================================
 // SHARED UTILITIES - used by every page
 // ============================================

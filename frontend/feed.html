@@ -14,27 +14,17 @@
 
   <div class="container">
 
-    <!-- Create Post Card -->
-    <div class="card">
-      <form id="createPostForm">
-        <div class="form-group">
-          <textarea id="captionInput" rows="3" placeholder="What's on your mind?"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="imageInput" style="font-weight: 400; color: var(--text-gray); cursor: pointer;">
-            📷 Add a photo (optional)
-          </label>
-          <input type="file" id="imageInput" accept="image/*" />
-        </div>
-        <button type="submit" class="btn btn-primary" id="postBtn">Post</button>
-      </form>
-    </div>
-
     <!-- Loading Spinner (shown while fetching posts) -->
     <div class="spinner" id="loadingSpinner"></div>
 
-    <!-- Posts get injected here -->
-    <div id="postsContainer"></div>
+    <!-- People to Follow -->
+<div class="card suggestions-card" id="suggestionsCard" style="display: none;">
+  <h3>👥 People you may know</h3>
+  <div id="suggestionsList"></div>
+</div>
+
+<!-- Posts get injected here -->
+<div id="postsContainer"></div>
 
   </div>
 

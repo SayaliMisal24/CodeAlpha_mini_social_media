@@ -165,5 +165,29 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+// @desc   Upload/update profile photo
+// @route  PUT /api/auth/profile/photo
+const updateProfilePhoto = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
 
-module.exports = { signup, login, getProfile, updateProfile };
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.profileImage = req.file.filename;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Profile photo updated successfully',
+      profileImage: user.profileImage,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+module.exports = { signup, login, getProfile, updateProfile, updateProfilePhoto };

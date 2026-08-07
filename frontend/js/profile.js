@@ -93,8 +93,9 @@ async function loadMyPosts() {
   loadingSpinner.style.display = 'block';
   try {
     const response = await fetch(`${API_BASE_URL}/posts`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  headers: { Authorization: `Bearer ${getToken()}` },
+  cache: 'no-store', // always get fresh data, never a cached 304 response
+});
     const allPosts = await response.json();
 
     // Filter to only this user's own posts
@@ -233,4 +234,97 @@ document.getElementById('followingStat').addEventListener('click', () => openLis
 modalCloseBtn.addEventListener('click', () => listModal.classList.remove('active'));
 listModal.addEventListener('click', (e) => {
   if (e.target === listModal) listModal.classList.remove('active');
+});
+// ----- Create Post (from Profile page) -----
+const createPostFormProfile = document.getElementById('createPostFormProfile');
+const postBtnProfile = document.getElementById('postBtnProfile');
+
+createPostFormProfile.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const caption = document.getElementById('captionInputProfile').value.trim();
+  const imageFile = document.getElementById('imageInputProfile').files[0];
+
+  if (!caption && !imageFile) {
+    showToast('Write something or add a photo first', 'error');
+    return;
+  }
+
+  postBtnProfile.disabled = true;
+  postBtnProfile.textContent = 'Posting...';
+
+  try {
+    const formData = new FormData();
+    formData.append('caption', caption);
+    if (imageFile) formData.append('image', imageFile);
+
+    const response = await fetch(`${API_BASE_URL}/posts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${getToken()}` },
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error();
+
+    document.getElementById('captionInputProfile').value = '';
+    document.getElementById('imageInputProfile').value = '';
+    showToast('Post created!', 'success');
+    loadMyPosts(); // refresh "My Posts" list below
+  } catch (error) {
+    showToast('Failed to create post', 'error');
+  } finally {
+    postBtnProfile.disabled = false;
+    postBtnProfile.textContent = 'Post';
+  }
+});
+// ----- Profile Photo Upload -----
+const profilePhotoInput = document.getElementById('profilePhotoInput');
+const profilePhotoWrapper = document.querySelector('.profile-photo-wrapper');
+
+profilePhotoInput.addEventListener('change', async () => {
+  const file = profilePhotoInput.files[0];
+  if (!file) return;
+
+  // Basic validation
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select an image file', 'error');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image must be under 5MB', 'error');
+    return;
+  }
+
+  profilePhotoWrapper.classList.add('uploading');
+
+  try {
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    const response = await fetch(`${API_BASE_URL}/auth/profile/photo`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${getToken()}` },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Upload failed');
+    }
+
+    // Update the image immediately on screen
+    profileImage.src = `images/${data.profileImage}?t=${Date.now()}`; // cache-busting
+
+    // Update saved user info so navbar/other pages reflect it too
+    const updatedUser = { ...getUser(), profileImage: data.profileImage };
+    saveUser(updatedUser);
+
+    showToast('Profile photo updated!', 'success');
+  } catch (error) {
+    showToast(error.message || 'Failed to upload photo', 'error');
+  } finally {
+    profilePhotoWrapper.classList.remove('uploading');
+    profilePhotoInput.value = ''; // reset so selecting the same file again still triggers change
+  }
 });

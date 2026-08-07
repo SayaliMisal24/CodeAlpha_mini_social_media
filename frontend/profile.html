@@ -12,10 +12,28 @@
   <div id="navbar-container"></div>
 
   <div class="container">
-
+<!-- Create Post (also available here on profile page) -->
+<div class="card">
+  <form id="createPostFormProfile">
+    <div class="form-group">
+      <textarea id="captionInputProfile" rows="3" placeholder="What's on your mind?"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="imageInputProfile" style="font-weight: 400; color: var(--text-gray); cursor: pointer;">
+        📷 Add a photo (optional)
+      </label>
+      <input type="file" id="imageInputProfile" accept="image/*" />
+    </div>
+    <button type="submit" class="btn btn-primary" id="postBtnProfile">Post</button>
+  </form>
+</div>
     <div class="card profile-header">
-      <img id="profileImage" src="https://via.placeholder.com/100" alt="Profile" />
-      <h2 id="profileName">Loading...</h2>
+  <div class="profile-photo-wrapper">
+    <img id="profileImage" src="https://via.placeholder.com/100" alt="Profile" />
+    <label for="profilePhotoInput" class="profile-photo-edit-btn" title="Change photo">📷</label>
+    <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;" />
+  </div>
+  <h2 id="profileName">Loading...</h2>
       <p id="profileUsername" style="color: var(--text-gray);"></p>
       <p id="profileBio" style="margin-top: 8px;"></p>
 

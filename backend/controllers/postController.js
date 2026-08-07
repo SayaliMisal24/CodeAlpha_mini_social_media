@@ -1,6 +1,6 @@
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
-
+const Notification = require('../models/Notification');
 // @desc   Create a new post
 // @route  POST /api/posts
 const createPost = async (req, res) => {
@@ -87,11 +87,19 @@ const toggleLike = async (req, res) => {
     const alreadyLiked = post.likes.includes(req.userId);
 
     if (alreadyLiked) {
-      // Unlike: remove userId from likes array
       post.likes = post.likes.filter((id) => id.toString() !== req.userId);
     } else {
-      // Like: add userId to likes array
       post.likes.push(req.userId);
+
+      // Create a notification (but not if you liked your own post)
+      if (post.userId.toString() !== req.userId) {
+        await Notification.create({
+          recipient: post.userId,
+          sender: req.userId,
+          type: 'like',
+          postId: post._id,
+        });
+      }
     }
 
     await post.save();
@@ -127,9 +135,18 @@ const addComment = async (req, res) => {
       comment,
     });
 
-    // Add the comment's ID to the post's comments array
     post.comments.push(newComment._id);
     await post.save();
+
+    // Create a notification (but not if you commented on your own post)
+    if (post.userId.toString() !== req.userId) {
+      await Notification.create({
+        recipient: post.userId,
+        sender: req.userId,
+        type: 'comment',
+        postId: post._id,
+      });
+    }
 
     const populatedComment = await newComment.populate('userId', 'name username');
 
@@ -141,5 +158,4 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 module.exports = { createPost, getPosts, deletePost, toggleLike, addComment };
