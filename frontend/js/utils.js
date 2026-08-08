@@ -6,6 +6,8 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'
 
 // The base URL of our backend API - change this if you deploy later
 const API_BASE_URL = 'https://codealpha-mini-social-media-wjp2.onrender.com/api';
+const IMAGE_BASE_URL = 'https://codealpha-mini-social-media-wjp2.onrender.com/images';
+
 // Helper: build the full URL for an uploaded image filename
 function getImageUrl(filename) {
   return `${IMAGE_BASE_URL}/${filename}`;
