@@ -12,7 +12,9 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors()); // Allows frontend to talk to this backend
+app.use(cors({
+  origin: '*',
+})); // Allows frontend to talk to this backend
 app.use(express.json()); // Allows server to read JSON data sent from frontend
 
 // Simple test route to confirm server is working
@@ -21,7 +23,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/posts', require('./routes/postroutes'));
 app.use('/api/follow', require('./routes/followRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));

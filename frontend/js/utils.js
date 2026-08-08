@@ -5,7 +5,7 @@ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'
 // ============================================
 
 // The base URL of our backend API - change this if you deploy later
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://codealpha-mini-social-media-wjp2.onrender.com/api';
 
 // ----------- TOAST NOTIFICATIONS -----------
 // Call showToast("Message", "success") or showToast("Message", "error")
