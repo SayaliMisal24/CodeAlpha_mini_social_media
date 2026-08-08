@@ -1090,3 +1090,25 @@ body {
 .verified-badge {
   font-size: 12px;
 }
+/* ============================================
+   BACK BUTTON
+   ============================================ */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--primary-blue);
+}
