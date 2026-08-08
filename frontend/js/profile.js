@@ -1,3 +1,11 @@
+document.getElementById('captionInputProfile').addEventListener('input', (e) => {
+  document.getElementById('captionCount').textContent = e.target.value.length;
+});
+document.getElementById('copyLinkBtn').addEventListener('click', () => {
+  const link = `${window.location.origin}${window.location.pathname.replace('profile.html', 'view-profile.html')}?id=${currentUser.id}`;
+  navigator.clipboard.writeText(link);
+  showToast('Profile link copied!', 'success');
+});
 // ============================================
 // PROFILE PAGE LOGIC
 // ============================================

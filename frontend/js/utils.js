@@ -54,6 +54,7 @@ function getUser() {
 
 // Log the user out completely
 function logout() {
+  if (!confirm('Are you sure you want to log out?')) return;
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   window.location.href = 'login.html';
@@ -71,3 +72,13 @@ function isValidEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
+// Global: pressing Escape closes any open dropdown/modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.dropdown-menu').forEach((d) => d.classList.remove('active'));
+    document.querySelectorAll('.post-menu-dropdown').forEach((d) => (d.style.display = 'none'));
+    document.querySelectorAll('.modal-overlay').forEach((m) => m.classList.remove('active'));
+    const lightbox = document.getElementById('lightboxOverlay');
+    if (lightbox) lightbox.classList.remove('active');
+  }
+});

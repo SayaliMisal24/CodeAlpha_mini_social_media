@@ -16,7 +16,8 @@
 <div class="card">
   <form id="createPostFormProfile">
     <div class="form-group">
-      <textarea id="captionInputProfile" rows="3" placeholder="What's on your mind?"></textarea>
+      <textarea id="captionInputProfile" rows="3" maxlength="500" placeholder="What's on your mind?"></textarea>
+<div style="text-align: right; font-size: 12px; color: var(--text-gray); margin-top: 4px;"><span id="captionCount">0</span>/500</div>
     </div>
     <div class="form-group">
       <label for="imageInputProfile" style="font-weight: 400; color: var(--text-gray); cursor: pointer;">
@@ -52,7 +53,10 @@
   </div>
 </div>
 
-      <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+  <button class="btn btn-outline" id="editProfileBtn">Edit Profile</button>
+  <button class="btn btn-outline" id="copyLinkBtn">🔗 Copy Link</button>
+</div>
     </div>
 
     <!-- Edit Profile Form (hidden until "Edit Profile" is clicked) -->

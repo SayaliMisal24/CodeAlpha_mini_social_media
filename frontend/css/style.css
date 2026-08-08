@@ -847,7 +847,9 @@ body, .card, .navbar, .comment-item, input, textarea {
    (prevents any flex/float leaking between sections)
    ============================================ */
 .post-card {
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100%;
 }
 
 .post-header {
@@ -855,15 +857,20 @@ body, .card, .navbar, .comment-item, input, textarea {
   align-items: center;
   gap: 12px;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .post-caption,
 img.post-image,
 .post-actions,
 .comments-section {
-  display: block;
-  width: 100%;
-  clear: both;
+  display: block !important;
+  width: 100% !important;
+  flex-shrink: 0;
+}
+
+.post-caption {
+  max-width: 100%;
 }
 
 .post-header > a:first-child img {

@@ -66,6 +66,7 @@ function renderPostCard(post) {
     <div class="post-menu-wrapper" style="margin-left: auto; position: relative;">
       <button class="btn-icon" data-action="toggle-menu" data-id="${post._id}" style="font-size: 20px; padding: 4px 10px;">⋮</button>
       <div class="post-menu-dropdown" data-menu-for="${post._id}" style="display: none;">
+        <button data-action="edit-post" data-id="${post._id}" style="color: var(--text-dark);">✏️ Edit Caption</button>
         <button data-action="delete-post" data-id="${post._id}">🗑️ Delete Post</button>
       </div>
     </div>
@@ -267,6 +268,28 @@ async function deletePostFromFeed(postId) {
     showToast('Failed to delete post', 'error');
   }
 }
+// ----- Edit a post's caption -----
+async function editPostCaption(postId, currentCaption) {
+  const newCaption = prompt('Edit your caption:', currentCaption || '');
+  if (newCaption === null) return; // user clicked cancel
+  if (newCaption.trim() === currentCaption) return; // no change
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ caption: newCaption.trim() }),
+    });
+    if (!response.ok) throw new Error();
+    showToast('Caption updated!', 'success');
+    loadPosts();
+  } catch (error) {
+    showToast('Failed to update caption', 'error');
+  }
+}
 // ----- EVENT DELEGATION for like, comment toggle, and send comment -----
 postsContainer.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-action]');
@@ -295,7 +318,11 @@ postsContainer.addEventListener('click', (e) => {
   });
   dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
 }
-
+if (action === 'edit-post') {
+  const card = postsContainer.querySelector(`[data-post-id="${postId}"]`);
+  const captionEl = card.querySelector('.post-caption');
+  editPostCaption(postId, captionEl ? captionEl.textContent : '');
+}
 if (action === 'delete-post') {
   deletePostFromFeed(postId);
   

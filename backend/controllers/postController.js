@@ -158,4 +158,23 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-module.exports = { createPost, getPosts, deletePost, toggleLike, addComment };
+// @desc   Edit a post's caption
+// @route  PUT /api/posts/:id
+const editPost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    if (post.userId.toString() !== req.userId) {
+      return res.status(403).json({ message: 'You can only edit your own posts' });
+    }
+
+    post.caption = req.body.caption;
+    await post.save();
+
+    res.status(200).json({ message: 'Post updated', post });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+module.exports = { createPost, getPosts, deletePost, toggleLike, addComment, editPost };
