@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/posts', require('./routes/PostRoutes'));
 app.use('/api/follow', require('./routes/followRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
