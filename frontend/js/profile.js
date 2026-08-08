@@ -76,27 +76,59 @@ function timeAgo(dateString) {
   return `${days}d ago`;
 }
 
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function renderMyPostCard(post) {
   return `
-    <div class="card">
+    <div class="card post-card" data-post-id="${post._id}">
       <div class="post-header">
         <img src="${profileImage.src}" alt="${currentUser.username}" />
         <div class="post-user-info">
-          <span class="post-username">${currentUser.username}</span>
+          <span class="post-username">You</span>
           <span class="post-date">${timeAgo(post.createdAt)}</span>
         </div>
+        <div class="post-menu-wrapper" style="margin-left: auto; position: relative;">
+          <button class="btn-icon" data-action="toggle-menu" data-id="${post._id}" style="font-size: 20px; padding: 4px 10px;">⋮</button>
+          <div class="post-menu-dropdown" data-menu-for="${post._id}" style="display: none;">
+            <button data-action="edit-post" data-id="${post._id}" style="color: var(--text-dark);">✏️ Edit Caption</button>
+            <button data-action="delete-post" data-id="${post._id}">🗑️ Delete Post</button>
+          </div>
+        </div>
       </div>
-      ${post.caption ? `<p class="post-caption">${post.caption}</p>` : ''}
       ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" />` : ''}
+      ${post.caption ? `<p class="post-caption">${escapeHTML(post.caption)}</p>` : ''}
       <div class="post-actions">
         <span class="btn-icon">❤️ ${post.likes.length}</span>
         <span class="btn-icon">💬 ${post.comments.length}</span>
-        <button class="btn-danger delete-post-btn" data-id="${post._id}" style="margin-left: auto;">🗑️ Delete</button>
       </div>
     </div>
   `;
 }
+async function editMyPostCaption(postId, currentCaption) {
+  const newCaption = prompt('Edit your caption:', currentCaption || '');
+  if (newCaption === null) return;
+  if (newCaption.trim() === currentCaption) return;
 
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ caption: newCaption.trim() }),
+    });
+    if (!response.ok) throw new Error();
+    showToast('Caption updated!', 'success');
+    loadMyPosts();
+  } catch (error) {
+    showToast('Failed to update caption', 'error');
+  }
+}
 async function loadMyPosts() {
   loadingSpinner.style.display = 'block';
   try {
@@ -124,10 +156,6 @@ async function loadMyPosts() {
 
     myPostsContainer.innerHTML = myPosts.map(renderMyPostCard).join('');
 
-    // Attach delete button events
-    document.querySelectorAll('.delete-post-btn').forEach((btn) => {
-      btn.addEventListener('click', () => deletePost(btn.dataset.id));
-    });
   } catch (error) {
     loadingSpinner.style.display = 'none';
     showToast('Failed to load your posts', 'error');
@@ -334,5 +362,38 @@ profilePhotoInput.addEventListener('change', async () => {
   } finally {
     profilePhotoWrapper.classList.remove('uploading');
     profilePhotoInput.value = ''; // reset so selecting the same file again still triggers change
+  }
+});
+// ----- Event delegation for post menu (edit/delete) on Profile page -----
+myPostsContainer.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+  const postId = btn.dataset.id;
+
+  if (action === 'toggle-menu') {
+    e.stopPropagation();
+    const dropdown = myPostsContainer.querySelector(`[data-menu-for="${postId}"]`);
+    document.querySelectorAll('.post-menu-dropdown').forEach((d) => {
+      if (d !== dropdown) d.style.display = 'none';
+    });
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  }
+
+  if (action === 'edit-post') {
+    const card = myPostsContainer.querySelector(`[data-post-id="${postId}"]`);
+    const captionEl = card.querySelector('.post-caption');
+    editMyPostCaption(postId, captionEl ? captionEl.textContent : '');
+  }
+
+  if (action === 'delete-post') {
+    deletePost(postId);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.post-menu-wrapper')) {
+    document.querySelectorAll('.post-menu-dropdown').forEach((d) => (d.style.display = 'none'));
   }
 });

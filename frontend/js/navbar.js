@@ -23,9 +23,10 @@ function renderNavbar() {
       <button class="navbar-toggle" id="navToggle">&#9776;</button>
 
       <div class="navbar-links" id="navLinks">
-        <a href="feed.html">Home</a>
-        <a href="profile.html">Profile</a>
-      </div>
+  <a href="feed.html">Home</a>
+  <a href="explore.html">Explore</a>
+  <a href="profile.html">Profile</a>
+</div>
 
       <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
 

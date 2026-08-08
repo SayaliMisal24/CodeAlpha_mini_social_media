@@ -42,7 +42,18 @@ const getUserById = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.status(200).json(user);
+    // Find mutual followers: people who follow BOTH the current user and this profile's user
+    const currentUser = await User.findById(req.userId).select('followers');
+    const currentUserFollowerIds = currentUser.followers.map((id) => id.toString());
+
+    const mutualFollowers = user.followers.filter((f) =>
+      currentUserFollowerIds.includes(f._id.toString())
+    );
+
+    res.status(200).json({
+      ...user.toObject(),
+      mutualFollowers,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

@@ -37,8 +37,8 @@ const createPost = async (req, res) => {
 const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .sort({ createdAt: -1 }) // newest posts first
-      .populate('userId', 'name username profileImage')
+      .sort({ createdAt: -1 })
+      .populate('userId', 'name username profileImage createdAt')
       .populate({
         path: 'comments',
         populate: { path: 'userId', select: 'name username' },
@@ -177,4 +177,4 @@ const editPost = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-module.exports = { createPost, getPosts, deletePost, toggleLike, addComment, editPost };
+  module.exports = { createPost, getPosts, deletePost, toggleLike, addComment, editPost };

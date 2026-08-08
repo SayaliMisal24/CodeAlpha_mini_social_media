@@ -15,7 +15,16 @@ function escapeHTML(str) {
   div.textContent = str;
   return div.innerHTML;
 }
-
+// ----- Show a verified badge for accounts older than 7 days -----
+function isVerified(createdAt) {
+  if (!createdAt) return false;
+  const daysSinceJoined = (new Date() - new Date(createdAt)) / (1000 * 60 * 60 * 24);
+  return daysSinceJoined >= 7;
+}
+// ----- Turn #hashtags in text into clickable links -----
+function linkifyHashtags(text) {
+  return text.replace(/#(\w+)/g, '<a href="explore.html?tag=$1" style="color: var(--primary-blue); font-weight: 600;">#$1</a>');
+}
 // ----- Format date nicely (e.g. "2 hours ago") -----
 function timeAgo(dateString) {
   const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
@@ -59,7 +68,7 @@ function renderPostCard(post) {
     <img src="${profileImg}" alt="${escapeHTML(post.userId.username)}" onerror="this.src='${fallbackAvatar}'" />
   </a>
   <div class="post-user-info">
-    <a href="${profileLink}" class="post-username">${isOwnPost ? 'You' : escapeHTML(post.userId.username)}</a>
+    <a href="${profileLink}" class="post-username">${isOwnPost ? 'You' : escapeHTML(post.userId.username)}${isVerified(post.userId.createdAt) ? ' <span class="verified-badge" title="Active member">✔️</span>' : ''}</a>
     <span class="post-date">${timeAgo(post.createdAt)}</span>
   </div>
   ${isOwnPost ? `
@@ -75,7 +84,7 @@ function renderPostCard(post) {
 
       ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" loading="lazy" />` : ''}
 
-      ${post.caption ? `<p class="post-caption">${escapeHTML(post.caption)}</p>` : ''}
+      ${post.caption ? `<p class="post-caption">${linkifyHashtags(escapeHTML(post.caption))}</p>` : ''}
 
       <div class="post-actions">
         <button class="btn-icon like-btn ${isLiked ? 'liked' : ''}" data-action="like" data-id="${post._id}">
@@ -367,6 +376,22 @@ function openLightbox(src) {
   document.getElementById('lightboxImg').src = src;
   overlay.classList.add('active');
 }
+// ----- Latest / Trending toggle -----
+document.querySelectorAll('.feed-tab').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.feed-tab').forEach((t) => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const sortedPosts = [...cachedPosts];
+    if (tab.dataset.sort === 'trending') {
+      sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
+    } else {
+      sortedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    postsContainer.innerHTML = sortedPosts.map(renderPostCard).join('');
+  });
+});
+
 // ----- Load posts when the page opens -----
 loadPosts();
 // ----- Load "People to Follow" suggestions -----

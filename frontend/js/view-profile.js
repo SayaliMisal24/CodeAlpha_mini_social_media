@@ -61,7 +61,17 @@ async function loadUserProfile() {
     followingCount.textContent = user.following.length;
 
     isFollowing = user.followers.some((f) => f._id === currentUser.id);
-    updateFollowButton();
+updateFollowButton();
+
+// Show mutual followers text
+const mutualText = document.getElementById('mutualFollowersText');
+if (user.mutualFollowers && user.mutualFollowers.length > 0) {
+  const names = user.mutualFollowers.slice(0, 2).map((f) => f.username).join(', ');
+  const extra = user.mutualFollowers.length > 2 ? ` and ${user.mutualFollowers.length - 2} others` : '';
+  mutualText.textContent = `Followed by ${names}${extra}`;
+} else {
+  mutualText.textContent = '';
+}
   } catch (error) {
     showToast('Failed to load profile', 'error');
   }
@@ -149,6 +159,24 @@ async function loadUserPosts() {
     showToast('Failed to load posts', 'error');
   }
 }
+// ----- Report / Block (UI-level for now) -----
+document.getElementById('moreOptionsBtn').addEventListener('click', () => {
+  const menu = document.getElementById('moreOptionsMenu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+});
+
+document.getElementById('reportUserBtn').addEventListener('click', () => {
+  if (confirm(`Report @${profileUsername.textContent.replace('@', '')} for review?`)) {
+    showToast('Report submitted. Our team will review it.', 'success');
+  }
+});
+
+document.getElementById('blockUserBtn').addEventListener('click', () => {
+  if (confirm(`Block @${profileUsername.textContent.replace('@', '')}? You won't see their posts or profile.`)) {
+    showToast('User blocked', 'success');
+    setTimeout(() => (window.location.href = 'feed.html'), 1000);
+  }
+});
 
 loadUserProfile();
 loadUserPosts();
