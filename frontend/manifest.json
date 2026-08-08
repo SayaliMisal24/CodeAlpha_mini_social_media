@@ -1,0 +1,16 @@
+{
+  "name": "Bondly",
+  "short_name": "Bondly",
+  "description": "Connect, share, and bond with people",
+  "start_url": "/login.html",
+  "display": "standalone",
+  "background_color": "#fbfaff",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
