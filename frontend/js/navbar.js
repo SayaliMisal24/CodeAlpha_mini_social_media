@@ -192,7 +192,7 @@ function renderNavbar() {
       notifDropdown.innerHTML = notifications
         .map((n) => {
           const avatar = n.sender.profileImage
-            ? `images/${n.sender.profileImage}`
+            ? getImageUrl(n.sender.profileImage)
             : `https://ui-avatars.com/api/?background=a855f7&color=fff&size=36&name=${encodeURIComponent(n.sender.username)}`;
           const link = n.type === 'follow' ? `view-profile.html?id=${n.sender._id}` : 'feed.html';
           return `

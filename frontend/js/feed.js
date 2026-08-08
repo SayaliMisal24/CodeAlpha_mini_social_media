@@ -43,7 +43,7 @@ function renderPostCard(post) {
   const isLiked = post.likes.includes(currentUser.id);
   const isOwnPost = post.userId._id === currentUser.id;
   const fallbackAvatar = 'https://ui-avatars.com/api/?background=a855f7&color=fff&name=' + encodeURIComponent(post.userId.username);
-  const profileImg = post.userId.profileImage ? `images/${post.userId.profileImage}` : fallbackAvatar;
+  const profileImg = post.userId.profileImage ? getImageUrl(post.userId.profileImage) : fallbackAvatar;
   const profileLink = isOwnPost ? 'profile.html' : `view-profile.html?id=${post.userId._id}`;
 
   const commentsHTML = post.comments.length
@@ -82,7 +82,7 @@ function renderPostCard(post) {
   ` : ''}
 </div>
 
-      ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" loading="lazy" />` : ''}
+      ${post.image ? `<img src="${getImageUrl(post.image)}" class="post-image" alt="Post image" loading="lazy" />` : ''}
 
       ${post.caption ? `<p class="post-caption">${linkifyHashtags(escapeHTML(post.caption))}</p>` : ''}
 

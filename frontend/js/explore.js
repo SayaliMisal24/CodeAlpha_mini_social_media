@@ -54,7 +54,7 @@ async function loadExplorePosts() {
       .map(
         (post) => `
         <div class="explore-tile" data-caption="${escapeHTMLExplore(post.caption || '')}" data-username="${escapeHTMLExplore(post.userId.username)}">
-          <img src="images/${post.image}" alt="Post" loading="lazy" />
+          <img src="${getImageUrl(post.image)}" alt="Post" loading="lazy" />
           <div class="explore-tile-overlay">
             <span>❤️ ${post.likes.length}</span>
             <span>💬 ${post.comments.length}</span>

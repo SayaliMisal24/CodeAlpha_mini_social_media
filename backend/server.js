@@ -15,6 +15,9 @@ const app = express();
 app.use(cors({
   origin: '*',
 })); // Allows frontend to talk to this backend
+// Serve uploaded images publicly
+const path = require('path');
+app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
 app.use(express.json()); // Allows server to read JSON data sent from frontend
 
 // Simple test route to confirm server is working

@@ -45,7 +45,7 @@ async function loadProfile() {
 
     // Fill in the profile card
     profileImage.src = user.profileImage
-  ? `images/${user.profileImage}`
+  ? getImageUrl(user.profileImage)
   : `https://ui-avatars.com/api/?background=a855f7&color=fff&size=100&name=${encodeURIComponent(user.username)}`;
     profileName.textContent = user.name;
     profileUsername.textContent = `@${user.username}`;
@@ -99,7 +99,7 @@ function renderMyPostCard(post) {
           </div>
         </div>
       </div>
-      ${post.image ? `<img src="images/${post.image}" class="post-image" alt="Post image" />` : ''}
+      ${post.image ? `<img src="${getImageUrl(post.image)}" class="post-image" alt="Post image" />` : ''}
       ${post.caption ? `<p class="post-caption">${escapeHTML(post.caption)}</p>` : ''}
       <div class="post-actions">
         <span class="btn-icon">❤️ ${post.likes.length}</span>
