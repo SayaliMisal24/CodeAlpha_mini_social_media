@@ -10,6 +10,9 @@ const IMAGE_BASE_URL = 'https://codealpha-mini-social-media-wjp2.onrender.com/im
 
 // Helper: build the full URL for an uploaded image filename
 function getImageUrl(filename) {
+  if (!filename) return '';
+  // Cloudinary URLs are already complete; only prepend for old local-style filenames (legacy/fallback)
+  if (filename.startsWith('http')) return filename;
   return `${IMAGE_BASE_URL}/${filename}`;
 }
 // ----------- TOAST NOTIFICATIONS -----------

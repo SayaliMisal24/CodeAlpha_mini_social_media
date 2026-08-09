@@ -1,28 +1,17 @@
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-// Configure where uploaded files are stored and how they're named
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Save uploaded images into frontend/images so the frontend can display them directly
-    cb(null, path.join(__dirname, '../../frontend/images'));
-  },
-  filename: (req, file, cb) => {
-    // Create a unique filename: timestamp + original extension
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
+// Configure storage to upload directly to Cloudinary instead of local disk
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'bondly', // all uploads go into a "bondly" folder in your Cloudinary account
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 1200, height: 1200, crop: 'limit' }], // avoid huge files
   },
 });
 
-// Only allow image files
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed'), false);
-  }
-};
-
-const upload = multer({ storage, fileFilter });
+const upload = multer({ storage });
 
 module.exports = upload;

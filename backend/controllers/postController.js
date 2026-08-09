@@ -12,10 +12,10 @@ const createPost = async (req, res) => {
     }
 
     const post = await Post.create({
-      userId: req.userId, // comes from authMiddleware
-      caption: caption || '',
-      image: req.file ? req.file.filename : '', // set by uploadMiddleware if an image was sent
-    });
+  userId: req.userId,
+  caption: caption || '',
+  image: req.file ? req.file.path : '', // Cloudinary gives the full URL in req.file.path
+  });
 
     // Return the post with user info attached
     const populatedPost = await Post.findById(post._id).populate(
