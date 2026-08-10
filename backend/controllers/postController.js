@@ -14,7 +14,7 @@ const createPost = async (req, res) => {
     const post = await Post.create({
   userId: req.userId,
   caption: caption || '',
-  image: req.file ? req.file.path : '', // Cloudinary gives the full URL in req.file.path
+  image: req.file ? req.file.filename : '',// Cloudinary gives the full URL in req.file.path
   });
 
     // Return the post with user info attached
